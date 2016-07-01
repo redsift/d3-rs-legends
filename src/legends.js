@@ -54,11 +54,8 @@ function _legends(id, makeSVG) {
   function _impl(context) {
     let selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
-    
-    let _inset = inset;
-    if (typeof _inset !== 'object') {
-      _inset = { top: _inset, bottom: _inset, left: _inset, right: _inset };
-    } 
+      
+    let _inset = _impl.canonicalInset();
            
     selection.each(function() {
       let node = select(this);  
@@ -151,6 +148,7 @@ function _legends(id, makeSVG) {
         groups = transition === true ? groups.transition(context) : groups;
         groups.attr('transform', (d) => 'translate(' + (offset + d) + ',0)');
       }
+
     });
     
   }
@@ -160,6 +158,61 @@ function _legends(id, makeSVG) {
   _impl.id = function() {
     return id;
   };
+    
+  _impl.childWidth = function() {
+    let _inset = _impl.canonicalInset();
+    return _inset.left + _inset.right + legendSize;
+  };
+  
+  _impl.childHeight = function() {
+    let _inset = _impl.canonicalInset();
+    return _inset.top + _inset.bottom + legendSize;
+  };
+  
+  _impl.childInset = function(inset) {
+    if (inset == null) inset = 0;
+    
+    if (typeof inset !== 'object') {
+      inset = { top: inset, left: inset, right: inset, bottom: inset };
+    } else {
+      inset = { top: inset.top, left: inset.left, right: inset.right, bottom: inset.bottom };
+    }
+    let legendOrientation = _impl.orientation();
+    if (legendOrientation === 'top') {
+      inset.top = inset.top + _impl.childHeight();
+    } else if (legendOrientation === 'left') {
+      inset.left = inset.left + _impl.childWidth();
+    } else if (legendOrientation === 'right') { 
+      inset.right = inset.right + _impl.childWidth();
+    } else {
+      inset.bottom = inset.bottom + _impl.childHeight();
+    }   
+    return inset;
+  };        
+
+  _impl.canonicalMargin = function() {
+    let _margin = margin;
+    if (_margin == null) _margin = 0;
+    if (typeof _margin === 'object') {
+      _margin = { top: _margin.top, bottom: _margin.bottom, left: _margin.left, right: _margin.right };
+    } else {
+      _margin = { top: _margin, bottom: _margin, left: _margin, right: _margin };
+    }
+    
+    return _margin;    
+  };  
+
+  _impl.canonicalInset = function() {
+    let _inset = inset;
+    if (_inset == null) _inset = 0;
+    if (typeof _inset === 'object') {
+      _inset = { top: _inset.top, bottom: _inset.bottom, left: _inset.left, right: _inset.right };
+    } else {
+      _inset = { top: _inset, bottom: _inset, left: _inset, right: _inset };
+    }
+    
+    return _inset;    
+  };  
     
   _impl.classed = function(value) {
     return arguments.length ? (classed = value, _impl) : classed;
