@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <style>
+      
+    body {
+      margin: 0px;
+    }
+    
+    svg {
+      background-color: lavender;
+      margin: 1em;
+    }
+
+    </style>    
+  </head>
+  <body>
+    <div id="elm"></div>
+        
+    <script src="https://d3js.org/d3.v4.0.0-alpha.49.js"></script>
+    <script src="/d3-rs-legends.umd-es2015.js"></script>
+    <script>
+
+    'use strict';
+
+    d3.select('#elm').call(d3_rs_legends.html('empty').background('red'));
+
+    d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('simple'));
+
+    d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('top').orientation('top').radius(10).padding(40));
+          
+    d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('left').orientation('left').padding(20));
+          
+    d3.select('#elm').datum([ 'A', 'B' , 'Clong' ]).call(d3_rs_legends.html('right').orientation('right').legendSize(20));
+          
+    </script>
+  </body>
+</html>
