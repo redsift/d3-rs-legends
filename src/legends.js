@@ -1,7 +1,7 @@
 
 import { select } from 'd3-selection';
 
-import { html as svg } from '@redsift/d3-rs-svg';
+import { html as chartSVG } from '@redsift/d3-rs-svg';
 import { 
   presentation10 as presentation10
 } from '@redsift/d3-rs-theme';
@@ -19,7 +19,8 @@ const DEFAULT_STYLE = [ "@import url(https://fonts.googleapis.com/css?family=Sou
                         "text{ font-family: 'Source Code Pro', Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-weight: 300; }"
                       ].join(' \n');
 
-export default function polars(id) {
+
+function _legends(id, makeSVG) {
   let classed = 'chart-legends', 
       theme = 'light',
       background = null,
@@ -63,27 +64,32 @@ export default function polars(id) {
       let node = select(this);  
       let _height = height || Math.round(width * DEFAULT_ASPECT);
       
-      // SVG element
-      let sid = null;
-      if (id) sid = 'svg-' + id;
-      let root = svg(sid).width(width).height(_height).margin(margin).scale(scale).style(style).background(background);
-      let tnode = node;
-      if (transition === true) {
-        tnode = node.transition(context);
+      let elmS = node,
+          w = width,
+          h = _height;
+          
+      if (makeSVG === true) {
+        // SVG element
+        let sid = null;
+        if (id) sid = 'svg-' + id;
+        let root = chartSVG(sid).width(w).height(h).margin(margin).scale(scale).style(style).background(background);
+        let tnode = node;
+        if (transition === true) {
+          tnode = node.transition(context);
+        }
+        tnode.call(root);
+        
+        elmS = node.select(root.self()).select(root.child());
+        w = root.childWidth();
+        h = root.childHeight();
       }
-      tnode.call(root);
       
-      let elmS = node.select(root.self()).select(root.child());
-
       // Create required elements
       let g = elmS.select(_impl.self())
       if (g.empty()) {
         g = elmS.append('g').attr('class', classed).attr('id', id);
       }
 
-      let w = root.childWidth(),
-          h = root.childHeight();
-      
       let legend = (g.datum() || []).map((d, i) => ({ d: d, i: i }));
       
       if (orientation === 'top') {
@@ -109,13 +115,18 @@ export default function polars(id) {
       lg = newlg.merge(lg);
 
       let rect = lg.selectAll('rect');
+      let text = lg.selectAll('text').text((d) => d.d);
+            
+      if (transition === true) {
+          rect = rect.transition(context);
+          text = text.transition(context);
+      }
+      
       rect.attr('rx', radius)
             .attr('ry', radius)
             .attr('width', legendSize)
             .attr('height', legendSize)
             .attr('fill', d => colors(d.d, d.i));
-
-      let text = lg.selectAll('text').text((d) => d.d);
 
       text.attr('y', legendSize / 2);
       if (orientation === 'right') {
@@ -127,12 +138,18 @@ export default function polars(id) {
       let lens = legend.map((s) => s.d.length * spacing + legendSize + textPadding + padding);
 
       if (orientation === 'left' || orientation === 'right') {
-        g.selectAll('g').data(lens).attr('transform', (d, i) => 'translate(' + 0 + ',' + (i * (legendSize + padding)) + ')');
+        let groups = g.selectAll('g').data(lens);
+        
+        groups = transition === true ? groups.transition(context) : groups;
+        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (i * (legendSize + padding)) + ')');
       } else {
         let clens = []
         let total = lens.reduce((p, c) => (clens.push(p) , p + c), 0) - padding; // trim the last padding
         let offset = -total / 2;
-        g.selectAll('g').data(clens).attr('transform', (d) => 'translate(' + (offset + d) + ',0)');
+        let groups = g.selectAll('g').data(clens);
+        
+        groups = transition === true ? groups.transition(context) : groups;
+        groups.attr('transform', (d) => 'translate(' + (offset + d) + ',0)');
       }
     });
     
@@ -217,4 +234,12 @@ export default function polars(id) {
   };     
               
   return _impl;
+}
+
+export function html(id) {
+  return _legends(id, true);
+}
+
+export function svg(id) {
+  return _legends(id, false);
 }

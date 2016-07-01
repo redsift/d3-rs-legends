@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "description": "Generates legends for charts using D3v4.",
   "keywords": [
-    "polar",
+    "legend",
     "redsift",
     "d3",
     "chart"

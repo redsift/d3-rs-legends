@@ -4,5 +4,6 @@ export {
 
 
 export {
-  default as html
+  html as html,
+  svg as svg  
 } from "./src/legends";
