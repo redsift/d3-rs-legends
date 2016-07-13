@@ -121,8 +121,8 @@ function _legends(id, makeSVG) {
       
       rect.attr('rx', radius)
             .attr('ry', radius)
-            .attr('width', legendSize)
-            .attr('height', legendSize)
+            .attr('width', s => s.d != null ? legendSize : 0)
+            .attr('height', s => s.d != null ? legendSize : 0)
             .attr('fill', d => colors(d.d, d.i));
 
       text.attr('y', legendSize / 2);
@@ -132,13 +132,15 @@ function _legends(id, makeSVG) {
         text.attr('x', () => legendSize + textPadding).attr('text-anchor', 'start');
       }
       
-      let lens = legend.map((s) => s.d.length * spacing + legendSize + textPadding + padding);
-
+      let lens = legend.map(s => s.d == null ?  0 : s.d.length * spacing + legendSize + textPadding + padding);
+      
       if (orientation === 'left' || orientation === 'right') {
         let groups = g.selectAll('g').data(lens);
-        
         groups = transition === true ? groups.transition(context) : groups;
-        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (i * (legendSize + padding)) + ')');
+
+        let idx = -1;
+        let remap = legend.map(s => (s.d == null ? idx : ++idx));
+        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding)) + ')');
       } else {
         let clens = []
         let total = lens.reduce((p, c) => (clens.push(p) , p + c), 0) - padding; // trim the last padding
