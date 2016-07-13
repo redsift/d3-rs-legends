@@ -24,7 +24,6 @@
 
     var empty = d3_rs_legends.html('empty').background('red');
     d3.select('#elm').call(empty);
-    console.log(empty.childInset());
     
     d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('simple'));
 
@@ -33,6 +32,10 @@
     d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('left').orientation('left').padding(20));
           
     d3.select('#elm').datum([ 'A', 'B' , 'Clong' ]).call(d3_rs_legends.html('right').orientation('right').legendSize(20));
+
+    d3.select('#elm').datum([ 'A', null , 'B' ]).call(d3_rs_legends.html('null').orientation('right').legendSize(20));
+
+    d3.select('#elm').datum([ null, 'A', null , 'B' ]).call(d3_rs_legends.html('null-down').orientation('bottom').legendSize(20));
           
     </script>
   </body>
