@@ -95,7 +95,7 @@ function _legends(id, makeSVG) {
         g = elmS.append('g').attr('class', classed).attr('id', id);
       }
 
-      let legend = (node.datum() || []).map((d, i) => ({ d: d, i: i }));
+      let legend = node.datum() || [];
       
       let lg = g.selectAll('g').data(legend);
       lg.exit().remove();
@@ -106,16 +106,16 @@ function _legends(id, makeSVG) {
         .attr('dominant-baseline', 'central');
             
       let rect = g.selectAll('g rect').data(legend);
-      let text = g.selectAll('g text').data(legend).text(d => d.d);
+      let text = g.selectAll('g text').data(legend).text(d => d);
 
-      let lens = legend.map(s => s.d == null ?  0 : s.d.length * msize + legendSize + textPadding + padding);
+      let lens = legend.map(d => d == null ?  0 : d.length * msize + legendSize + textPadding + padding);
       
       if (orientation === 'left' || orientation === 'right') {
         let groups = g.selectAll('g').data(lens);
         groups = transition === true ? groups.transition(context) : groups;
 
         let idx = -1;
-        let remap = legend.map(s => (s.d == null ? idx : ++idx));
+        let remap = legend.map(d => (d == null ? idx : ++idx));
         groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding)) + ')');
       } else {
         let clens = []
@@ -147,9 +147,9 @@ function _legends(id, makeSVG) {
       
       rect.attr('rx', radius)
             .attr('ry', radius)
-            .attr('width', s => s.d != null ? legendSize : 0)
-            .attr('height', s => s.d != null ? legendSize : 0)
-            .attr('fill', d => colors(d.d, d.i));
+            .attr('width', d => d != null ? legendSize : 0)
+            .attr('height', d => d != null ? legendSize : 0)
+            .attr('fill', colors);
 
       text.attr('y', legendSize / 2)
           .attr('fill', fontFill === undefined ? display[theme].text : fontFill)
