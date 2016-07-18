@@ -4,10 +4,10 @@
       
     body {
       margin: 0px;
+      background-color: antiquewhite;
     }
     
     svg {
-      background-color: lavender;
       margin: 1em;
     }
 
@@ -25,7 +25,14 @@
     var empty = d3_rs_legends.html('empty').background('red');
     d3.select('#elm').call(empty);
     
-    d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('simple'));
+    var test = d3_rs_legends.html('simple');
+    d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(test);
+    var i = 0;
+    setInterval(() => (i++, d3.select('#elm').datum([ 'A' + i, 'B' + i , 'C' + i ]).call(test)), 1000);
+
+    d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('dark').theme('dark'));
+
+    d3.select('#elm').datum([ 'MM', 'MMMMM' , 'M' ]).call(d3_rs_legends.html('m'));
 
     d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('top').orientation('top').radius(10).padding(40));
           
@@ -36,6 +43,8 @@
     d3.select('#elm').datum([ 'A', null , 'B' ]).call(d3_rs_legends.html('null').orientation('right').legendSize(20));
 
     d3.select('#elm').datum([ null, 'A', null , 'B' ]).call(d3_rs_legends.html('null-down').orientation('bottom').legendSize(20));
+
+    d3.select('#elm').datum([ 'MM', 'MMMMM' , 'M' ]).call(d3_rs_legends.html('large-m').size(800));
           
     </script>
   </body>
