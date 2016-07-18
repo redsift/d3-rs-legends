@@ -96,7 +96,26 @@ function _legends(id, makeSVG) {
       }
 
       let legend = (node.datum() || []).map((d, i) => ({ d: d, i: i }));
-      console.log(legend);
+      console.log(legend.length > 0 ? legend[0].d : '');
+      node.datum(legend);
+      
+      let lg = g.selectAll('g').data(legend);
+      lg.exit().remove();
+      let newlg = lg.enter().append('g');
+      
+      newlg.append('rect');
+      newlg.append('text')
+        .attr('dominant-baseline', 'central');
+            
+      let rect = g.selectAll('g rect').data(legend);
+      let text = g.selectAll('g text').data(legend).text(d => (console.log(d), d.d));
+            
+      if (transition === true) {
+          g = g.transition(context);
+          rect = rect.transition(context);
+          text = text.transition(context);
+      }      
+      
       if (orientation === 'top') {
         g.attr('transform', 'translate(' + (w/2) + ',' + (_inset.top) + ')');
       } else if (orientation === 'left') {
@@ -106,26 +125,8 @@ function _legends(id, makeSVG) {
       } else {
         g.attr('transform', 'translate(' + (w/2) + ',' + (h - _inset.bottom - legendSize) + ')');
       }
-      
-      let lg = g.selectAll('g').data(legend);
-      lg.exit().remove();
-      let newlg = lg.enter().append('g');
-      
+
       let colors = _makeFillFn();
-
-      newlg.append('rect');
-      newlg.append('text')
-        .attr('dominant-baseline', 'central');
-            
-      lg = newlg.merge(lg);
-
-      let rect = lg.selectAll('rect');
-      let text = lg.selectAll('text').text((d) => (console.log(d), d.d));
-            
-      if (transition === true) {
-          rect = rect.transition(context);
-          text = text.transition(context);
-      }
       
       rect.attr('rx', radius)
             .attr('ry', radius)
