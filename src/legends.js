@@ -14,7 +14,7 @@ const DEFAULT_MARGIN = 12;  // white space
 const DEFAULT_INSET = 8;   // scale space
 const DEFAULT_LEGEND_SIZE = 14;
 const DEFAULT_LEGEND_RADIUS = 2;
-const DEFAULT_LEGEND_TEXT_SCALE = 7.19; // hack value to do fast estimation of length of string
+const DEFAULT_LEGEND_TEXT_SCALE = 8.39; // hack value to do fast estimation of length of string
 // TODO: estimate the M, m = 7.19 = 12
 // m = 8.39  = 14
 // m = 9.59 = 20
@@ -96,8 +96,6 @@ function _legends(id, makeSVG) {
       }
 
       let legend = (node.datum() || []).map((d, i) => ({ d: d, i: i }));
-      console.log(legend.length > 0 ? legend[0].d : '');
-      node.datum(legend);
       
       let lg = g.selectAll('g').data(legend);
       lg.exit().remove();
@@ -108,7 +106,26 @@ function _legends(id, makeSVG) {
         .attr('dominant-baseline', 'central');
             
       let rect = g.selectAll('g rect').data(legend);
-      let text = g.selectAll('g text').data(legend).text(d => (console.log(d), d.d));
+      let text = g.selectAll('g text').data(legend).text(d => d.d);
+
+      let lens = legend.map(s => s.d == null ?  0 : s.d.length * msize + legendSize + textPadding + padding);
+      
+      if (orientation === 'left' || orientation === 'right') {
+        let groups = g.selectAll('g').data(lens);
+        groups = transition === true ? groups.transition(context) : groups;
+
+        let idx = -1;
+        let remap = legend.map(s => (s.d == null ? idx : ++idx));
+        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding)) + ')');
+      } else {
+        let clens = []
+        let total = lens.reduce((p, c) => (clens.push(p) , p + c), 0) - padding; // trim the last padding
+        let offset = -total / 2;
+        let groups = g.selectAll('g').data(clens);
+        
+        groups = transition === true ? groups.transition(context) : groups;
+        groups.attr('transform', (d) => 'translate(' + (offset + d) + ',0)');
+      }
             
       if (transition === true) {
           g = g.transition(context);
@@ -143,24 +160,7 @@ function _legends(id, makeSVG) {
         text.attr('x', () => legendSize + textPadding).attr('text-anchor', 'start');
       }
       
-      let lens = legend.map(s => s.d == null ?  0 : s.d.length * msize + legendSize + textPadding + padding);
-      
-      if (orientation === 'left' || orientation === 'right') {
-        let groups = g.selectAll('g').data(lens);
-        groups = transition === true ? groups.transition(context) : groups;
 
-        let idx = -1;
-        let remap = legend.map(s => (s.d == null ? idx : ++idx));
-        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding)) + ')');
-      } else {
-        let clens = []
-        let total = lens.reduce((p, c) => (clens.push(p) , p + c), 0) - padding; // trim the last padding
-        let offset = -total / 2;
-        let groups = g.selectAll('g').data(clens);
-        
-        groups = transition === true ? groups.transition(context) : groups;
-        groups.attr('transform', (d) => 'translate(' + (offset + d) + ',0)');
-      }
 
     });
     

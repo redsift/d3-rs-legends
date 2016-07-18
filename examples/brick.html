@@ -16,7 +16,7 @@
   <body>
     <div id="elm"></div>
         
-    <script src="https://d3js.org/d3.v4.0.0-alpha.49.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="/d3-rs-legends.umd-es2015.js"></script>
     <script>
 
@@ -28,7 +28,7 @@
     var test = d3_rs_legends.html('simple');
     d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(test);
     var i = 0;
-    setInterval(() => (i++, d3.select('#elm').datum([ 'A' + i, 'B' + i , 'C' + i ]).call(test)), 1000);
+    setInterval(() => (i++, d3.select('#elm').datum([ 'A' + i, 'B' + i , 'C' + i ]).transition().call(test)), 1000);
 
     d3.select('#elm').datum([ 'A', 'B' , 'C' ]).call(d3_rs_legends.html('dark').theme('dark'));
 

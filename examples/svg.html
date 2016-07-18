@@ -20,13 +20,16 @@
     var svg = d3_rs_svg.html().background('antiquewhite');
     var legend = d3_rs_legends.svg().width(svg.childWidth()).height(svg.childHeight());
     
-    var composed = d3.select('#elm').call(svg.style(legend.style()))
+    var composed = d3.select('#elm').call(svg.style(legend.defaultStyle()))
       .select(svg.self()).select(svg.child())
         .datum([ 'A', 'B' , 'C' ]);
         
     composed.call(legend);
     
-    composed.transition().duration(2000).delay(1000).call(legend.legendSize(50).radius(25).fill([ 'red', 'blue', 'green' ]))
+    composed.transition()
+      .duration(2000)
+      .delay(1000)
+      .call(legend.legendSize(50).radius(25).fill([ 'red', 'blue', 'green' ]))
           
     </script>
   </body>
