@@ -3,7 +3,9 @@ import { select } from 'd3-selection';
 
 import { html as chartSVG } from '@redsift/d3-rs-svg';
 import { 
-  presentation10 as presentation10
+  presentation10,
+  fonts,
+  display
 } from '@redsift/d3-rs-theme';
 
 const DEFAULT_SIZE = 270;
@@ -12,28 +14,27 @@ const DEFAULT_MARGIN = 12;  // white space
 const DEFAULT_INSET = 8;   // scale space
 const DEFAULT_LEGEND_SIZE = 14;
 const DEFAULT_LEGEND_RADIUS = 2;
-const DEFAULT_LEGEND_TEXT_SCALE = 9; // hack value to do fast estimation of length of string
-
-// Font fallback chosen to keep presentation on places like GitHub where Content Security Policy prevents inline SRC
-const DEFAULT_STYLE = [ "@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:300);",
-                        "text{ font-family: 'Source Code Pro', Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-weight: 300; }"
-                      ].join(' \n');
-
+const DEFAULT_LEGEND_TEXT_SCALE = 8.39; // hack value to do fast estimation of length of string
+// TODO: estimate the M, m = 7.19 = 12
+// m = 8.39  = 14
+// m = 9.59 = 20
 
 function _legends(id, makeSVG) {
   let classed = 'chart-legends', 
       theme = 'light',
-      background = null,
+      background = undefined,
       width = DEFAULT_SIZE,
       height = null,
       margin = DEFAULT_MARGIN,
       inset = DEFAULT_INSET,
       padding = DEFAULT_INSET,
       textPadding = DEFAULT_INSET,
-      style = DEFAULT_STYLE,
+      style = undefined,
       legendSize = DEFAULT_LEGEND_SIZE,
       radius = DEFAULT_LEGEND_RADIUS,
-      spacing = DEFAULT_LEGEND_TEXT_SCALE,
+      msize = DEFAULT_LEGEND_TEXT_SCALE,
+      fontSize = undefined,
+      fontFill = undefined,
       orientation = 'bottom',
       fill = null,
       scale = 1.0;
@@ -50,13 +51,16 @@ function _legends(id, makeSVG) {
     }
     return colors;  
   }  
-  
+
   function _impl(context) {
     let selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
       
     let _inset = _impl.canonicalInset();
-           
+    let _style = style;
+    if (_style === undefined) {
+      _style = _impl.defaultStyle();
+    }       
     selection.each(function() {
       let node = select(this);  
       let _height = height || Math.round(width * DEFAULT_ASPECT);
@@ -66,10 +70,14 @@ function _legends(id, makeSVG) {
           h = _height;
           
       if (makeSVG === true) {
+        let _background = background;
+        if (_background === undefined) {
+          _background = display[theme].background;
+        }
         // SVG element
         let sid = null;
         if (id) sid = 'svg-' + id;
-        let root = chartSVG(sid).width(w).height(h).margin(margin).scale(scale).style(style).background(background);
+        let root = chartSVG(sid).width(w).height(h).margin(margin).scale(scale).style(_style).background(_background);
         let tnode = node;
         if (transition === true) {
           tnode = node.transition(context);
@@ -87,59 +95,27 @@ function _legends(id, makeSVG) {
         g = elmS.append('g').attr('class', classed).attr('id', id);
       }
 
-      let legend = (g.datum() || []).map((d, i) => ({ d: d, i: i }));
-      
-      if (orientation === 'top') {
-        g.attr('transform', 'translate(' + (w/2) + ',' + (_inset.top) + ')');
-      } else if (orientation === 'left') {
-        g.attr('transform', 'translate(' + _inset.left + ',' + ((h - legend.length * (legendSize + padding) + padding)/2) + ')');
-      } else if (orientation === 'right') {
-        g.attr('transform', 'translate(' + (w - _inset.right - legendSize) + ',' + ((h - legend.length * (legendSize + padding) + padding)/2) + ')');
-      } else {
-        g.attr('transform', 'translate(' + (w/2) + ',' + (h - _inset.bottom - legendSize) + ')');
-      }
+      let legend = node.datum() || [];
       
       let lg = g.selectAll('g').data(legend);
       lg.exit().remove();
       let newlg = lg.enter().append('g');
       
-      let colors = _makeFillFn();
-
       newlg.append('rect');
       newlg.append('text')
         .attr('dominant-baseline', 'central');
             
-      lg = newlg.merge(lg);
+      let rect = g.selectAll('g rect').data(legend);
+      let text = g.selectAll('g text').data(legend).text(d => d);
 
-      let rect = lg.selectAll('rect');
-      let text = lg.selectAll('text').text((d) => d.d);
-            
-      if (transition === true) {
-          rect = rect.transition(context);
-          text = text.transition(context);
-      }
-      
-      rect.attr('rx', radius)
-            .attr('ry', radius)
-            .attr('width', s => s.d != null ? legendSize : 0)
-            .attr('height', s => s.d != null ? legendSize : 0)
-            .attr('fill', d => colors(d.d, d.i));
-
-      text.attr('y', legendSize / 2);
-      if (orientation === 'right') {
-        text.attr('x', () => -textPadding).attr('text-anchor', 'end');
-      } else {
-        text.attr('x', () => legendSize + textPadding).attr('text-anchor', 'start');
-      }
-      
-      let lens = legend.map(s => s.d == null ?  0 : s.d.length * spacing + legendSize + textPadding + padding);
+      let lens = legend.map(d => d == null ?  0 : d.length * msize + legendSize + textPadding + padding);
       
       if (orientation === 'left' || orientation === 'right') {
         let groups = g.selectAll('g').data(lens);
         groups = transition === true ? groups.transition(context) : groups;
 
         let idx = -1;
-        let remap = legend.map(s => (s.d == null ? idx : ++idx));
+        let remap = legend.map(d => (d == null ? idx : ++idx));
         groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding)) + ')');
       } else {
         let clens = []
@@ -150,6 +126,41 @@ function _legends(id, makeSVG) {
         groups = transition === true ? groups.transition(context) : groups;
         groups.attr('transform', (d) => 'translate(' + (offset + d) + ',0)');
       }
+            
+      if (transition === true) {
+          g = g.transition(context);
+          rect = rect.transition(context);
+          text = text.transition(context);
+      }      
+      
+      if (orientation === 'top') {
+        g.attr('transform', 'translate(' + (w/2) + ',' + (_inset.top) + ')');
+      } else if (orientation === 'left') {
+        g.attr('transform', 'translate(' + _inset.left + ',' + ((h - legend.length * (legendSize + padding) + padding)/2) + ')');
+      } else if (orientation === 'right') {
+        g.attr('transform', 'translate(' + (w - _inset.right - legendSize) + ',' + ((h - legend.length * (legendSize + padding) + padding)/2) + ')');
+      } else {
+        g.attr('transform', 'translate(' + (w/2) + ',' + (h - _inset.bottom - legendSize) + ')');
+      }
+
+      let colors = _makeFillFn();
+      
+      rect.attr('rx', radius)
+            .attr('ry', radius)
+            .attr('width', d => d != null ? legendSize : 0)
+            .attr('height', d => d != null ? legendSize : 0)
+            .attr('fill', colors);
+
+      text.attr('y', legendSize / 2)
+          .attr('fill', fontFill === undefined ? display[theme].text : fontFill)
+          .attr('font-size', fontSize === undefined ? fonts.fixed.sizeForWidth(w) : fontSize);
+      if (orientation === 'right') {
+        text.attr('x', () => -textPadding).attr('text-anchor', 'end');
+      } else {
+        text.attr('x', () => legendSize + textPadding).attr('text-anchor', 'start');
+      }
+      
+
 
     });
     
@@ -160,7 +171,13 @@ function _legends(id, makeSVG) {
   _impl.id = function() {
     return id;
   };
-    
+  
+  _impl.defaultStyle = () => `${fonts.fixed.cssImport}
+                              ${_impl.self()} text { 
+                                font-family: ${fonts.fixed.family}; 
+                                font-weight: ${fonts.fixed.weightMonochrome}; }
+  `;
+      
   _impl.childWidth = function() {
     let _inset = _impl.canonicalInset();
     return _inset.left + _inset.right + legendSize;
@@ -268,8 +285,8 @@ function _legends(id, makeSVG) {
     return arguments.length ? (textPadding = value, _impl) : textPadding;
   };  
 
-  _impl.spacing = function(value) {
-    return arguments.length ? (spacing = value, _impl) : spacing;
+  _impl.msize = function(value) {
+    return arguments.length ? (msize = value, _impl) : msize;
   };   
 
   _impl.legendSize = function(value) {
@@ -287,6 +304,15 @@ function _legends(id, makeSVG) {
   _impl.orientation = function(value) {
     return arguments.length ? (orientation = value, _impl) : orientation;
   };     
+              
+  _impl.fontSize = function(value) {
+    return arguments.length ? (fontSize = value, _impl) : fontSize;
+  };                 
+
+  _impl.fontFill = function(value) {
+    return arguments.length ? (fontFill = value, _impl) : fontFill;
+  };  
+
               
   return _impl;
 }
