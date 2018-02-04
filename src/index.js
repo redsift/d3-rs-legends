@@ -1,9 +1,9 @@
 export {
   version
-} from "./package.json";
+} from "../package.json";
 
 
 export {
   html as html,
   svg as svg  
-} from "./src/legends";
+} from "./legends";
