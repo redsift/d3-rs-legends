@@ -1,6 +1,6 @@
 {
   "name": "@redsift/d3-rs-legends",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Generates legends for charts using D3v4.",
   "keywords": [
     "legend",
@@ -26,17 +26,16 @@
   "scripts": {
     "serve": "gulp -o d3-rs-legends -g d3-selection serve",
     "prepublish": "npm run clean; npm run build",
-    "build": "npm run clean; node ./node_modules/@redsift/rollup-bundler/src/index.js",
+    "build": "npm run clean; node ./node_modules/@redsift/rollup-bundler/src/index.js bundle.config.js",
     "clean": "rm -rf dist",
     "pretest": "npm outdated || true && npm run build",
-    "test": "tape 'test/**/*-test.js' && eslint index.js src",
-    "prepublish": "npm run build"
+    "test": "tape 'test/**/*-test.js' && eslint index.js src"
   },
   "dependencies": {
     "d3-selection": "^1.2.0",
     "d3-format": "^1.2.2",
-    "@redsift/d3-rs-svg": "~0.4.0",
-    "@redsift/d3-rs-theme": "~0.4.2"
+    "@redsift/d3-rs-svg": "^0.4.0",
+    "@redsift/d3-rs-theme": "^0.4.2"
   },
   "devDependencies": {
     "@redsift/rollup-bundler": "^0.3.2",
