@@ -39,7 +39,8 @@ function _legends(id, makeSVG) {
       fill = null,
       scale = 1.0,
       toggleable = false,
-      onEnabledLegendItemsChange = null;
+      onEnabledLegendItemsChange = null,
+      tintColor = '#000';
 
   function _makeFillFn() {
     let colors = () => fill;
@@ -115,7 +116,7 @@ function _legends(id, makeSVG) {
             checkboxMark.attr('stroke', 'transparent');
           } else {
             enabledLegendItems.push(idx);
-            checkboxMark.attr('stroke', 'red');
+            checkboxMark.attr('stroke', tintColor);
           }
           onEnabledLegendItemsChange(enabledLegendItems);
         }
@@ -125,14 +126,14 @@ function _legends(id, makeSVG) {
             .attr('x', 0)
             .attr('rx', 3)
             .attr('ry', 3)
-            .attr('stroke', 'red')
+            .attr('stroke', tintColor)
             .attr('fill', 'transparent')
             .data(legend)
             .on('click', toggleLegendItem);
         newlg.append('path')
             .attr('d', 'M3,7.5L6,12L12,3')
             .attr('stroke-width', 1)
-            .attr('stroke', 'red')
+            .attr('stroke', tintColor)
             .attr('fill', 'transparent')
             .data(legend).attr('class', d => `checkbox-mark-${d}`);
         rect.on('click', toggleLegendItem);
@@ -352,6 +353,9 @@ function _legends(id, makeSVG) {
     return arguments.length ? (onEnabledLegendItemsChange = value, _impl) : onEnabledLegendItemsChange;
   };
 
+  _impl.tintColor = function(value) {
+    return arguments.length ? (tintColor = value, _impl) : tintColor;
+  };
 
   return _impl;
 }
