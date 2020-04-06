@@ -151,12 +151,12 @@ function _legends(id, makeSVG) {
         groups.attr('transform', (d, i) => 'translate(0,' + (remap[i] * (legendSize + padding)) + ')');
       } else {
         let clens = []
-        let total = lens.reduce((p, c) => (clens.push(p) , p + c), 0) - padding; // trim the last padding
+        let total = lens.reduce((p, c) => (clens.push(p), p + c), 0) - padding; // trim the last padding
         let offset = -total / 2;
         let groups = g.selectAll('g').data(clens);
 
         groups = transition === true ? groups.transition(context) : groups;
-        groups.attr('transform', (d) => 'translate(' + (offset + d - checkboxOffset) + ',0)');
+        groups.attr('transform', (d) => 'translate(' + (offset + d + checkboxOffset * 3) + ',0)');
         if (toggleable) groups.attr('cursor', 'pointer');
       }
 
