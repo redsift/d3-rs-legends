@@ -156,7 +156,7 @@ function _legends(id, makeSVG) {
         let groups = g.selectAll('g').data(clens);
 
         groups = transition === true ? groups.transition(context) : groups;
-        groups.attr('transform', (d) => 'translate(' + (offset + d + checkboxOffset) + ',0)');
+        groups.attr('transform', (d) => 'translate(' + (offset + d - checkboxOffset) + ',0)');
         if (toggleable) groups.attr('cursor', 'pointer');
       }
 
