@@ -29,7 +29,6 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@babel/runtime": "^7.9.2",
     "@redsift/d3-rs-svg": "~0.4.0",
     "@redsift/d3-rs-theme": "~0.4.2",
     "d3-format": "^1.2.2",
