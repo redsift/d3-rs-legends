@@ -148,7 +148,7 @@ function _legends(id, makeSVG) {
 
         let idx = -1;
         let remap = legend.map(d => (d == null ? idx : ++idx));
-        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding)) + ')');
+        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding + checkboxOffset)) + ')');
       } else {
         let clens = []
         let total = lens.reduce((p, c) => (clens.push(p) , p + c), 0) - padding; // trim the last padding
