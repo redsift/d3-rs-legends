@@ -148,7 +148,7 @@ function _legends(id, makeSVG) {
 
         let idx = -1;
         let remap = legend.map(d => (d == null ? idx : ++idx));
-        groups.attr('transform', (d, i) => 'translate(' + 0 + ',' + (remap[i] * (legendSize + padding + checkboxOffset)) + ')');
+        groups.attr('transform', (d, i) => 'translate(0,' + (remap[i] * (legendSize + padding)) + ')');
       } else {
         let clens = []
         let total = lens.reduce((p, c) => (clens.push(p) , p + c), 0) - padding; // trim the last padding
@@ -156,7 +156,7 @@ function _legends(id, makeSVG) {
         let groups = g.selectAll('g').data(clens);
 
         groups = transition === true ? groups.transition(context) : groups;
-        groups.attr('transform', (d) => 'translate(' + (offset + d) + ',0)');
+        groups.attr('transform', (d) => 'translate(' + (offset + d + checkboxOffset) + ',0)');
         if (toggleable) groups.attr('cursor', 'pointer');
       }
 
