@@ -160,7 +160,7 @@ function _legends(id, makeSVG) {
         if (toggleable) groups.attr('cursor', 'pointer');
       }
 
-      if (transition === true) {
+      if (!!transition) {
         g = g.transition(context);
         rect = rect.transition(context);
         text = text.transition(context);
@@ -191,7 +191,7 @@ function _legends(id, makeSVG) {
         text.attr('x', () => -textPadding - checkboxOffset).attr('text-anchor', 'end');
         rect.attr('x', () => -checkboxOffset);
       } else {
-        text.attr('x', () => legendSize + textPadding + checkboxOffset).attr('text-anchor', 'start');
+        text.attr('x', () => legendSize * 3.5 + textPadding + checkboxOffset).attr('text-anchor', 'start');
         rect.attr('x', () => checkboxOffset);
       }
     });
