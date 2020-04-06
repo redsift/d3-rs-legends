@@ -107,7 +107,7 @@ function _legends(id, makeSVG) {
       let rect = newlg.append('rect').data(legend);
       let text = newlg.append('text').attr('dominant-baseline', 'central').data(legend).text(d => d);
 
-      let checkboxSize = 15, checkboxOffset = toggleable ? checkboxSize + 5 : 0;
+      let checkboxOffset = toggleable ? legendSize * 2 : 0;
       if (toggleable) {
         const toggleLegendItem = (d, idx) => {
           const checkboxMark = newlg.select(`.checkbox-mark-${d}`);
@@ -121,8 +121,8 @@ function _legends(id, makeSVG) {
           onEnabledLegendItemsChange(enabledLegendItems);
         }
         newlg.append('rect')
-            .attr('width', checkboxSize)
-            .attr('height', checkboxSize)
+            .attr('width', legendSize)
+            .attr('height', legendSize)
             .attr('x', 0)
             .attr('rx', 3)
             .attr('ry', 3)
@@ -179,7 +179,7 @@ function _legends(id, makeSVG) {
 
       rect.attr('rx', radius)
           .attr('ry', radius)
-          .attr('width', d => d != null ? legendSize : 0)
+          .attr('width', d => d != null ? legendSize * 1.5 : 0)
           .attr('height', d => d != null ? legendSize : 0)
           .attr('fill', colors);
 
