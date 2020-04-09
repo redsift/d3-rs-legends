@@ -69,5 +69,8 @@ Property|Description|Transition|Preview
 `padding`|*Integer* Pixels between each legend element
 `radius`|*Integer* Radius of the legend rectangle. Rounds the element
 `fill`|*Array, Function* Colors to assign to legend in order
+`toggleable`|*Boolean* If true will add a new Checkbox on the left side of the color square to add capability to enable/disable legend items.|N
+`onEnabledLegendItemsChange`|*Function* To be called whenever enabled legend items changed. It's called passing an array of the enabled legend indexes|N
+`tintColor`|*String* Color to use for checkbox|N
 
 
