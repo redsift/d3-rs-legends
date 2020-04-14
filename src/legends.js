@@ -111,12 +111,15 @@ function _legends(id, makeSVG) {
       if (toggleable) {
         const toggleLegendItem = (d, idx) => {
           const checkboxMark = newlg.select(`.checkbox-mark-${d}`);
+          const checkbox = newlg.select(`.checkbox-${d}`);
           if (enabledLegendItems.includes(idx)) {
             enabledLegendItems = enabledLegendItems.filter(i => i !== idx);
             checkboxMark.attr('stroke', 'transparent');
+            checkbox.attr('fill', 'transparent');
           } else {
             enabledLegendItems.push(idx);
-            checkboxMark.attr('stroke', tintColor);
+            checkboxMark.attr('stroke', 'white');
+            checkbox.attr('fill', tintColor);
           }
           onEnabledLegendItemsChange(enabledLegendItems);
         }
@@ -129,7 +132,8 @@ function _legends(id, makeSVG) {
             .attr('stroke', tintColor)
             .attr('fill', 'transparent')
             .data(legend)
-            .on('click', toggleLegendItem);
+            .on('click', toggleLegendItem)
+            .attr('class', d => `checkbox-${d}`);
         newlg.append('path')
             .attr('d', 'M3,7.5L6,12L12,3')
             .attr('stroke-width', 1)
@@ -156,7 +160,7 @@ function _legends(id, makeSVG) {
         let groups = g.selectAll('g').data(clens);
 
         groups = transition === true ? groups.transition(context) : groups;
-        groups.attr('transform', (d) => 'translate(' + (offset + d + checkboxOffset * 3) + ',0)');
+        groups.attr('transform', (d) => 'translate(' + (offset + d + checkboxOffset * 4) + ',0)');
         if (toggleable) groups.attr('cursor', 'pointer');
       }
 
