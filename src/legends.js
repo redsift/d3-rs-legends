@@ -109,7 +109,8 @@ function _legends(id, makeSVG) {
 
       let checkboxOffset = toggleable ? legendSize * 2 : 0;
       if (toggleable) {
-        const toggleLegendItem = (d, idx) => {
+        const toggleLegendItem = (d) => {
+          const idx = legend.indexOf(d);
           const checkboxMark = newlg.select(`.checkbox-mark-${d}`);
           const checkbox = newlg.select(`.checkbox-${d}`);
           if (enabledLegendItems.includes(idx)) {
