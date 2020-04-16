@@ -109,10 +109,9 @@ function _legends(id, makeSVG) {
 
       let checkboxOffset = toggleable ? legendSize * 2 : 0;
       if (toggleable) {
-        const toggleLegendItem = (d) => {
-          const idx = legend.indexOf(d);
-          const checkboxMark = newlg.select(`.checkbox-mark-${d}`);
-          const checkbox = newlg.select(`.checkbox-${d}`);
+        const toggleLegendItem = (d, idx) => {
+          const checkboxMark = newlg.select(`.checkbox-mark-${idx}`);
+          const checkbox = newlg.select(`.checkbox-${idx}`);
           if (enabledLegendItems.includes(idx)) {
             enabledLegendItems = enabledLegendItems.filter(i => i !== idx);
             checkboxMark.attr('stroke', 'transparent');
@@ -133,14 +132,16 @@ function _legends(id, makeSVG) {
             .attr('stroke', tintColor)
             .attr('fill', tintColor)
             .data(legend)
-            .attr('class', d => `checkbox-${d}`);
+            .on('click', toggleLegendItem)
+            .attr('class', (d, idx) => `checkbox-${idx}`);
 
         newlg.append('path')
             .attr('d', 'M3,7.5L6,12L12,3')
             .attr('stroke-width', 1)
             .attr('stroke', 'white')
             .attr('fill', 'transparent')
-            .data(legend).attr('class', d => `checkbox-mark-${d}`);
+            .data(legend)
+            .attr('class', (d, idx) => `checkbox-mark-${idx}`);
 
         rect.on('click', toggleLegendItem);
         text.on('click', toggleLegendItem);
