@@ -132,14 +132,15 @@ function _legends(id, makeSVG) {
             .attr('stroke', tintColor)
             .attr('fill', tintColor)
             .data(legend)
-            .on('click', toggleLegendItem)
             .attr('class', d => `checkbox-${d}`);
+
         newlg.append('path')
             .attr('d', 'M3,7.5L6,12L12,3')
             .attr('stroke-width', 1)
             .attr('stroke', 'white')
             .attr('fill', 'transparent')
             .data(legend).attr('class', d => `checkbox-mark-${d}`);
+
         rect.on('click', toggleLegendItem);
         text.on('click', toggleLegendItem);
       }
