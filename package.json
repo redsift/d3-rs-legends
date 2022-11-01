@@ -35,7 +35,7 @@
     "d3-selection": "^1.2.0"
   },
   "devDependencies": {
-    "@redsift/tape-reel": "~0.0.2",
+    "@redsift/tape-reel": "~0.1.1",
     "browser-sync": "^2.13.0",
     "del": "^2.2.1",
     "eslint": "^3.0.1",
