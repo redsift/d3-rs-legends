@@ -1,36 +1,37 @@
-machine: 
-  node:
-    version: 8.0.0
-  environment: 
-    S3_BUCKET: redsift-static
-    NAME: d3-rs-legends
+version: 2.1
 
-checkout: 
-  pre:
-    - npm install -g npm
-  post: 
-    - git fetch --tags
+# Define the jobs we want to run for this project
+jobs:
+  build:
+    docker:
+      - image: quay.io/redsift/sandbox-javascript:v16.15.0
+    steps:
+      - run: ssh -o StrictHostKeyChecking=no git@github.com || true
+      - git-shallow-clone/checkout:
+          fetch_depth: 1
+      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run: npm i -g npm@8.18.0
 
-dependencies: 
-  override:
-    - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc    
-    - npm install
-    - mv ./distribution ${CIRCLE_ARTIFACTS}/distribution
+      - restore_cache: # special step to restore the dependency cache
+          # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm install && npm test
+      - save_cache: # special step to save the dependency cache
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
 
-test:
-  override:
-    - npm test 
-            
-deployment:
-  production:
-    branch: /release-.*/
-    commands:
-      - sudo pip install awscli
-      - echo "Publishing to NPM"
-      - npm publish --access=public    
-      - echo "Uploading to S3 bucket..."
-      - aws s3 cp ${CIRCLE_ARTIFACTS}/distribution s3://$S3_BUCKET/reusable/$NAME/latest --recursive --acl public-read --cache-control max-age=7200,public
-      - |
-         VERSION=$(cat package.json | python -c 'import sys, json; print json.load(sys.stdin)["version"]')-$(git describe --exact-match --tags 2>/dev/null || git rev-parse --short HEAD)
-         aws s3 cp ${CIRCLE_ARTIFACTS}/distribution s3://$S3_BUCKET/reusable/$NAME/$VERSION --recursive --acl public-read --cache-control max-age=31556926,public
-      - echo "S3 upload complete."
+      - run:
+          command: |
+          npm run build
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - distribution
+
+
+# Orchestrate our job run sequence
+workflows:
+  build_and_test:
+    jobs:
+      - build
