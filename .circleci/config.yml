@@ -7,8 +7,6 @@ jobs:
       - image: quay.io/redsift/sandbox-javascript:v16.15.0
     steps:
       - run: ssh -o StrictHostKeyChecking=no git@github.com || true
-      - git-shallow-clone/checkout:
-          fetch_depth: 1
       - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
       - run: npm i -g npm@8.18.0
 
