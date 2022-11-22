@@ -141,6 +141,7 @@ function _legends(id, makeSVG) {
             .attr('stroke', 'white')
             .attr('fill', 'transparent')
             .data(legend)
+            .on('click', toggleLegendItem)
             .attr('class', (d, idx) => `checkbox-mark-${idx}`);
 
         rect.on('click', toggleLegendItem);
