@@ -2,7 +2,7 @@ defaults:
   setup: &setup
     shell: /bin/bash
     environment:
-      NAME: sdd
+      NAME: d3-rs-legends
     docker:
       - image: quay.io/redsift/nodeos:latest
 
