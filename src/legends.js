@@ -168,7 +168,7 @@ function _legends(id, makeSVG) {
         if (toggleable) groups.attr('cursor', 'pointer');
       }
 
-      if (transition) {
+      if (!!transition) {
         g = g.transition(context);
         rect = rect.transition(context);
         text = text.transition(context);
