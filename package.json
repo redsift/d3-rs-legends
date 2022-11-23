@@ -1,6 +1,6 @@
 {
   "name": "@redsift/d3-rs-legends",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Generates legends for charts using D3v4.",
   "keywords": [
     "legend",

@@ -20,7 +20,7 @@ commands:
     description: "Publishing to NPM"
     steps:
       - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-      - run: npm publish --access=restricted
+      - run: npm publish --access=public
 
 jobs:
   build:
