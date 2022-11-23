@@ -141,6 +141,7 @@ function _legends(id, makeSVG) {
             .attr('stroke', 'white')
             .attr('fill', 'transparent')
             .data(legend)
+            .on('click', toggleLegendItem)
             .attr('class', (d, idx) => `checkbox-mark-${idx}`);
 
         rect.on('click', toggleLegendItem);
@@ -167,7 +168,7 @@ function _legends(id, makeSVG) {
         if (toggleable) groups.attr('cursor', 'pointer');
       }
 
-      if (!!transition) {
+      if (transition) {
         g = g.transition(context);
         rect = rect.transition(context);
         text = text.transition(context);
