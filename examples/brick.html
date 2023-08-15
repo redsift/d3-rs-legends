@@ -44,7 +44,9 @@
 
     d3.select('#elm').datum([ null, 'A', null , 'B' ]).call(d3_rs_legends.html('null-down').orientation('bottom').legendSize(20));
 
-    d3.select('#elm').datum([ 'MM', 'MMMMM' , 'M' ]).call(d3_rs_legends.html('large-m').size(800));
+    d3.select('#elm').datum([ 'MM', 'MMMMM' , 'M' ]).call(d3_rs_legends.html('large-m').size(800).toggleable(true).onEnabledLegendItemsChange((enabledLegendItems)=>{
+      alert("Enbaled legend items " +  enabledLegendItems.length)
+    }));
           
     </script>
   </body>
